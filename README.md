@@ -16,7 +16,7 @@ This package provides a python implementation of the method. To the best of our 
 
 We recommend [[1]](#1) and [[2]](#2) for an introduction to the method, while the textbook by Rasmussen and Wiliams [[5]](#5) is an excellent general introdution to Gaussian Processes.
 
-In the current framework, it is not possible to include global inequality constraints, most important in order to reconstruct a strictily positive function. This makes reconstructing sharp peaks that swiftly approach zero at the tails one of the hardest reconstruction problems with this technique. Currently, we are not aware of any method of globally constraining Gaussian processes to strictly positive values, but will continue to work on providing such a feature in the future.
+In the current framework, it is not possible to include global inequality constraints, most relevant to reconstruct a strictily positive function. This makes reconstructing sharp peaks that swiftly approach zero at the tails one of the hardest reconstruction problems with this technique. Currently, we are looking into several possibilites to provide such a feature in the future.
 
 ## Installation
 
@@ -28,7 +28,7 @@ pip install fredipy
 
 ## Usage
 
-See [examples](examples/), for in depth examples of the package usage. Specifically, [this notebook](/examples/basic_breit_wigner.ipynb) covers the most important basic options.
+See [examples](https://github.com/JonasTurnwald/fredipy/tree/main/examples/), for in depth examples of the package usage. Specifically, [this notebook](https://github.com/JonasTurnwald/fredipy/tree/main/examples/basic_breit_wigner.ipynb) covers the most important basic options.
 
 A simple example for the reconstruction of a single Breit-Wigner peak, showcasing the basic structure.
 
