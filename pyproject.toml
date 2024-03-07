@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fredipy"
+authors = [
+    {name = "Jonas Turnwald", email = "j.turnwald@theorie.ikp.physik.tu-darmstadt.de"},
+    {name = "Julian M. Urban", email = "tbd@tbd.com"},  # DO EMAILS!
+    {name = "Nicolas Wink", email = "tbd@tbd.com"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics"
+    ]
+readme = "README.md"
+license = { file = "LICENSE" }
+description = "Inverting Fredholm Integrals with Python"
+keywords = ["gaussian-process","fredholm","inverse-problem"]
+dynamic = ["version"]
+dependencies = [
+    "numpy",
+    "scipy"
+]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+test = ["pytest"]
+examples = ["matplotlib"]
+
+[project.urls]
+Repository = "https://github.com/JonasTurnwald/fredipy"
+
+[tool.setuptools.packages.find]
+include = ["fredipy"]
+exclude = ["tests*", "docs", "examples", "archive"]
+
+[tool.setuptools.dynamic]
+version = {attr = "fredipy.__version__"}

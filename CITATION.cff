@@ -1,0 +1,20 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: fredipy
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Jonas
+    family-names: Turnwald
+    affiliation: TU Darmstadt
+  - given-names: Julian M.
+    family-names: Urban
+    affiliation: MIT, IAIFI
+  - given-names: Nicolas
+    family-names: Wink
+    affiliation: TU Darmstadt
+repository-code: 'https://github.com/JonasTurnwald/fredipy'
