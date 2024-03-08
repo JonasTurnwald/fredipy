@@ -18,6 +18,8 @@ We recommend [[1]](#1) and [[2]](#2) for an introduction to the method, while th
 
 In the current framework, it is not possible to include global inequality constraints, most relevant to reconstruct a strictily positive function. This makes reconstructing sharp peaks that swiftly approach zero at the tails one of the hardest reconstruction problems with this technique. Currently, we are looking into several possibilites to provide such a feature in the future.
 
+Note, that we use custom integration routines for two reasons: Firstly, this lets us write the integration as a fast matrix multiplication. Secondly, using integration schemes that do not have a fixed set of grid points, can lead to numerical instabilities in the reconstruction. The consistency of the result in the different integration procedures during the reconstruction is very important and we therefore explicitly require this.
+
 ## Installation
 
 To install _fredipy_ from PyPi, use
