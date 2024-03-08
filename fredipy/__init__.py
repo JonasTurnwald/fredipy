@@ -8,4 +8,4 @@ from . import (
 
 __all__ = ["models", "constraints", "operators", "integrators", "util", "kernels"]
 
-__version__ = "0.2"
+__version__ = "0.1.0"
