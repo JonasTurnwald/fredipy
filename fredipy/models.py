@@ -138,6 +138,29 @@ class GaussianProcess(Model):
         else:
             return mu, np.sqrt(np.diag(C))
 
+    def predict_derivative(
+            self,
+            w_pred: np.ndarray,
+            full_cov: bool = False
+            ) -> Tuple[np.ndarray, np.ndarray]:
+
+        w_pred = make_column_vector(w_pred)
+        self._maybe_prepare_posterior()
+        OpKerOp_cholesky = self._posterior_cache['OpKerOp_cholesky']
+        alpha = self._posterior_cache['alpha']
+
+        DerivKerOp = construct_OpKer(self.kernel.dK_dy, self.constraints, w_pred)
+
+        mu = DerivKerOp.T @ alpha
+
+        v2 = sp.linalg.solve_triangular(OpKerOp_cholesky, DerivKerOp, lower=True)
+        C = self.kernel.d2K_dxdy(w_pred, w_pred) - v2.T @ v2
+
+        if full_cov:
+            return mu, C
+        else:
+            return mu, np.sqrt(np.diag(C))
+
     def log_likelihood(self) -> float:
         """Returns the log-likelihood of the posterior GP."""
         self._maybe_prepare_posterior()
