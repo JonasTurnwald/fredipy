@@ -19,6 +19,11 @@ def get_G(p, a, m, g):
     return a / (m ** 2 + (np.sqrt(p**2) + g) ** 2)
 
 
+def get_rho_deriv(w, a, m, g):
+    return (4 * a * g * (g**4 + m**4 + 2 * m**2 * w**2 - 3 * w**4 + 2 * g**2 * (m**2 - w**2))) \
+        / (g**4 + (m**2 - w**2)**2 + 2 * g**2 * (m**2 + w**2))**2
+
+
 # for testing all integrators
 def create_integrators(
         lowerbound: int | float,
@@ -169,3 +174,39 @@ def test_dressing_1D() -> None:
         print(devs)
         assert all(i > 0 for i in devs), \
             "Reconstructed data does not match input"
+
+
+def test_derivative_reconstruction_BW_1d() -> None:
+    """testing a specific problem that should definitely work with the given parameters"""
+    # preparing data
+    w_pred = np.arange(0.1, 10.0001, 0.1)
+    p = np.linspace(0.1, 10, 30)
+
+    a = 1.6
+    m = 1
+    g = 0.8
+
+    rho_deriv = get_rho_deriv(w_pred, a, m, g)
+    G = get_G(p, a, m, g)
+    err = 1e-5
+
+    data = {
+        'x': p,
+        'y': G + err * rng.randn(len(G)),
+        'dy': err * np.ones_like(p)}
+
+    # setting up the model
+    kernel = fp.kernels.RadialBasisFunction(0.5, 0.3)
+
+    # loop over all integrator methods
+    for integrator in create_integrators(0, 10, 500):
+
+        integral_op = fp.operators.Integral(kl_kernel, integrator)
+        constraints = [fp.constraints.LinearEquality(integral_op, data)]
+
+        for model in [fp.models.GaussianProcess(kernel, constraints),
+                      fp.models.GP(kernel, constraints)]:
+            _rho_deriv, _rho_deriv_err = model.predict_derivative(w_pred)
+            devs = 2 * _rho_deriv_err - abs(_rho_deriv.flatten() - rho_deriv)
+            assert all(i > 0 for i in devs), \
+                "Reconstructed data does not match input"

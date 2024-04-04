@@ -143,7 +143,23 @@ class GaussianProcess(Model):
             w_pred: np.ndarray,
             full_cov: bool = False
             ) -> Tuple[np.ndarray, np.ndarray]:
+        """Returns the prediction for the derivative of the GP.
 
+        Note: Currently does not work with direct derivative constraints.
+
+        Parameters
+        ----------
+        w_pred  : numpy array specifying the grid of evaluation points.
+        full_cov: flag for returning the full covariance matrix instead of the
+        pointwise error (sqrt of diagonal).
+
+        Returns
+        -------
+        mu: numpy array containing prediction, corresponding to mean of the
+        posterior distribution.
+        C if full_cov else sqrt(diag(C)): numpy array containing error
+        information, see description of full_cov parameter above.
+        """
         w_pred = make_column_vector(w_pred)
         self._maybe_prepare_posterior()
         OpKerOp_cholesky = self._posterior_cache['OpKerOp_cholesky']
