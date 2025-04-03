@@ -34,14 +34,16 @@ class TwoSided:
         for c1 in constraints:
             columns = []
             for c2 in constraints:
-                try:
-                    entry = getattr(self, f"_{type(c1.op).__name__}_{type(c2.op).__name__}")(c1, kernel, c2)
-                except AttributeError:
-                    try:
-                        entry = getattr(self, f"_{type(c2.op).__name__}_{type(c1.op).__name__}")(c2, kernel, c1).T
-                    except AttributeError:
-                        raise NotImplementedError(
-                            f"No rule found to combine operators of types {type(c1.op).__name__} and {type(c2.op).__name__} with kernel.")
+                combiner12 = getattr(self, f"_{type(c1.op).__name__}_{type(c2.op).__name__}", None)
+                combiner21 = getattr(self, f"_{type(c2.op).__name__}_{type(c1.op).__name__}", None)
+                if combiner12:
+                    entry = combiner12(c1, kernel, c2)
+                elif combiner21:
+                    entry = combiner21(c2, kernel, c1).T
+                else:
+                    raise NotImplementedError(
+                        f"No rule found to combine operators of types \
+                            {type(c1.op).__name__} and {type(c2.op).__name__} with kernel.")
                 columns.append(entry)
             rows.append(np.concatenate(columns, axis=1))
         return np.concatenate(rows)
@@ -96,9 +98,10 @@ class OneSided:
             ) -> np.ndarray:
         entries = []
         for c in constraints:
-            try:
-                entry = getattr(self, f"_{type(c.op).__name__}")(c, kernel, w)
-            except AttributeError:
+            combiner = getattr(self, f"_{type(c.op).__name__}")
+            if combiner:
+                entry = combiner(c, kernel, w)
+            else:
                 raise NotImplementedError(
                     f"No rule found to combine operator of type {type(c.op).__name__} with kernel.")
             entries.append(entry)
