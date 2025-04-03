@@ -8,12 +8,12 @@ class Kernel:
     """Basic kernel structure"""
     def __init__(self):
         self._K = None
-        self._x, self._y = None, None
+        self._x, self._y = np.array([None]), np.array([None])
         self.dim = 0
 
     def _empty_cache(self) -> None:
         self._K = None
-        self._x, self._y = None, None
+        self._x, self._y = np.array([None]), np.array([None])
 
     def __call__(
             self,
@@ -88,6 +88,22 @@ class Kernel:
             ) -> np.ndarray:
         """Kernel derivative w.r.t. both arguments, optional"""
         raise NotImplementedError('The derivative of this kernel is not implemented')
+
+
+class Trivial(Kernel):
+    def __init__(self):
+        pass
+
+    def make(
+            self,
+            x: np.ndarray,
+            y: np.ndarray,
+            cache=False):
+        """
+        Return matrix of shape (len(x), len(y)) with entries set to 1 where
+        x == y and 0 otherwise. Identity matrix if vectors x and y are equal.
+        """
+        return (x.reshape(-1,1) == y.reshape(1,-1)).astype(float)
 
 
 class RadialBasisFunction(Kernel):
