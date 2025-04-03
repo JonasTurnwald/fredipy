@@ -43,17 +43,17 @@ class GaussianProcess(Model):
             self,
             kernel: Kernel,
             constraints: List[LinearEquality],
-            OpKerOp: TwoSided =TwoSided(),
-            OpKer: OneSided =OneSided(),
+            OpKerOp: TwoSided = TwoSided(),
+            OpKer: OneSided = OneSided(),
             ) -> None:
         self.kernel = kernel
         self.constraints = constraints
 
         self.OpKerOp = OpKerOp
         self.OpKer = OpKer
-        
+
         self.y = np.concatenate([c.y for c in self.constraints])
-        self.dy = np.concatenate([c.dy for c in self.constraints])
+        self.dy = sp.linalg.block_diag(*[c.dy for c in self.constraints])
 
         # for caching intermediate results
         self._posterior_cache: Dict[str, np.ndarray] = {}
@@ -203,7 +203,7 @@ class GaussianProcess(Model):
             OpKerOp = self.OpKerOp(
                 self.kernel, self.constraints)
             OpKerOp_cholesky = np.linalg.cholesky(
-                OpKerOp + self.dy**2 * np.eye(OpKerOp.shape[0]))
+                OpKerOp + self.dy)
             alpha = sp.linalg.solve_triangular(
                 OpKerOp_cholesky.T,
                 sp.linalg.solve_triangular(
