@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 import numpy as np
 import scipy as sp
 
-from .kernel_construction import construct_OpKer, construct_OpKerOp
+from .covariance import TwoSided, OneSided
 from .util import make_column_vector
 
 
@@ -42,10 +42,16 @@ class GaussianProcess(Model):
     def __init__(
             self,
             kernel: Kernel,
-            constraints: List[LinearEquality]
+            constraints: List[LinearEquality],
+            OpKerOp: TwoSided =TwoSided(),
+            OpKer: OneSided =OneSided(),
             ) -> None:
         self.kernel = kernel
         self.constraints = constraints
+
+        self.OpKerOp = OpKerOp
+        self.OpKer = OpKer
+        
         self.y = np.concatenate([c.y for c in self.constraints])
         self.dy = np.concatenate([c.dy for c in self.constraints])
 
@@ -169,7 +175,7 @@ class GaussianProcess(Model):
         kernel_grad = self.kernel.params_gradient()
 
         for i in range(self.kernel.dim):
-            OpKer_grad = construct_OpKerOp(kernel_grad[i], self.constraints)
+            OpKer_grad = self.OpKerOp(kernel_grad[i], self.constraints)
             loglik_grad[i] = 0.5 * np.trace((alpha @ alpha.T - K_inv) @ OpKer_grad)
 
         return loglik_grad
@@ -194,7 +200,7 @@ class GaussianProcess(Model):
 
     def _maybe_prepare_posterior(self) -> None:
         if not self._posterior_cache:
-            OpKerOp = construct_OpKerOp(
+            OpKerOp = self.OpKerOp(
                 self.kernel, self.constraints)
             OpKerOp_cholesky = np.linalg.cholesky(
                 OpKerOp + self.dy**2 * np.eye(OpKerOp.shape[0]))
@@ -213,7 +219,7 @@ class GaussianProcess(Model):
             w_pred: np.ndarray,
             ) -> None:
         if not self._inference_cache:
-            OpKer = construct_OpKer(
+            OpKer = self.OpKer(
                 self.kernel, self.constraints, w_pred)
             self._inference_cache = {
                 'OpKer': OpKer}
