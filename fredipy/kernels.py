@@ -103,7 +103,7 @@ class Trivial(Kernel):
         Return matrix of shape (len(x), len(y)) with entries set to 1 where
         x == y and 0 otherwise. Identity matrix if vectors x and y are equal.
         """
-        return (x.reshape(-1,1) == y.reshape(1,-1)).astype(float)
+        return (make_column_vector(x) == make_row_vector(y)).astype(float)
 
 
 class RadialBasisFunction(Kernel):

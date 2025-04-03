@@ -4,7 +4,6 @@ if TYPE_CHECKING:
     from .kernels import Kernel
     from .constraints import LinearEquality
 
-from .operators import Integral, Identity, ConstMatrix, Derivative
 import numpy as np
 
 
