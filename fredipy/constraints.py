@@ -21,20 +21,41 @@ class LinearEquality(Constraint):
     def __init__(
             self,
             op: Operator,
-            data: dict
+            data: dict | list | np.ndarray
             ) -> None:
         """Implements the (equality) constraints on the Gaussian Process model.
 
         Parameters
         ----------
-        op  : operator that acts on the GP, see Operator module.
-        data: data dictionary, needs position 'x' and value 'y' entries and optionally some error 'dy'.
+        op      : operator that acts on the GP, see Operator module.
+        data    : data dictionary or List or np.ndarray. \
+                  If input is List Dictionary needs position 'x' and value 'y' entries and optionally some error 'dy'. \
+                  If input is List or np.ndarray needs [**x**, **y**, **dy**] entries, where dy is optional.
+        x       : position of the data, List or np.ndarray or number.
+        y       : value of the data, List or np.ndarray or number, must have the same length as x.
+        dy      : error of the data, List or np.ndarray or number or None.
         """
         self.op = op
-        x, y = make_column_vector(data['x']), make_column_vector(data['y'])
-        dy = (make_column_vector(data['dy']) if 'dy' in data else 0.) * np.ones_like(y)
-        assert x.shape[0] == len(y) == len(dy), \
-            f'Length of x/y/dy must match, have {x.shape[0], len(y), len(dy)}.'
+
+        if isinstance(data, dict):
+            x, y = make_column_vector(data['x']), make_column_vector(data['y'])
+            dy = np.array(data['dy'] if 'dy' in data else 0.)
+
+        if isinstance(data, list) or isinstance(data, np.ndarray):
+            x, y = make_column_vector(data[0]), make_column_vector(data[1])
+            dy = np.array(data[2] if len(data) > 2 else 0.)
+
+        len_y = y.shape[0]
+        assert x.shape[0] == len_y, \
+            f'Length of x/y must match, have {x.shape[0], len(y)}.'
+
+        assert (dy.shape == (len_y, len_y) or dy.shape == (len_y,) or dy.shape == (1,) or dy.shape == ()), \
+            f'Error matrix must be a matrix of shape (len(y), len(y)), a vector with len(y) or a number, \
+            have {dy.shape} with y having length {len_y}.'
+
+        if not dy.shape == (len(y), len(y)):
+            dy = dy * np.eye(len(y))
+
         self.x, self.y, self.dy = x, y, dy
         self._op = None
         self._args: Tuple = tuple()
