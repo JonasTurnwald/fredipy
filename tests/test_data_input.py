@@ -94,3 +94,49 @@ def test_single_datapoint_identity(x: Any) -> None:
         assert len(x) == len(_rho)
     else:
         assert len(_rho) == 1
+
+
+@pytest.mark.parametrize("dy", [
+    rng.rand(3, 3),
+    [0.1, 0.2, 0.3],
+    0.1,
+    np.array([0.1, 0.2, 0.3]),
+    np.array([0.1, 0.2, 0.3]).reshape(-1, 1),
+    np.array([0.1, 0.2, 0.3]).reshape(1, -1)
+])
+def test_multiple_dy_inputs(dy: Any) -> None:
+    x = np.array([1, 2, 3])
+    y = np.array([1, 2, 3])
+    data = {
+        'x': x,
+        'y': y,
+        'dy': dy
+    }
+
+    kernel = fp.kernels.RadialBasisFunction(0.5, 0.3)
+    constraints = [fp.constraints.LinearEquality(fp.operators.Identity(), data)]
+    model = fp.models.GaussianProcess(kernel, constraints)
+    _rho, _ = model.predict(x)
+
+    assert len(x) == len(_rho)
+
+
+@pytest.mark.parametrize("data_input", [
+    {'x': [1, 2, 3], 'y': [1, 2, 3], 'dy': [0.1, 0.2, 0.3]},
+    [[1, 2, 3], [1, 2, 3], [0.1, 0.2, 0.3]],
+    np.array([[1, 2, 3], [1, 2, 3], [0.1, 0.2, 0.3]])
+])
+def test_different_data_inputs(data_input: Any) -> None:
+    if isinstance(data_input, dict):
+        x = data_input['x']
+    else:
+        x = data_input[0]
+
+    data = data_input
+
+    kernel = fp.kernels.RadialBasisFunction(0.5, 0.3)
+    constraints = [fp.constraints.LinearEquality(fp.operators.Identity(), data)]
+    model = fp.models.GaussianProcess(kernel, constraints)
+    _rho, _ = model.predict(x)
+
+    assert len(x) == len(_rho)
