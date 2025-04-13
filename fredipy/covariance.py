@@ -97,7 +97,7 @@ class OneSided:
             ) -> np.ndarray:
         entries = []
         for c in constraints:
-            combiner = getattr(self, f"_{type(c.op).__name__}")
+            combiner = getattr(self, f"_{type(c.op).__name__}", None)
             if combiner:
                 entry = combiner(c, kernel, w)
             else:
