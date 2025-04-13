@@ -49,7 +49,8 @@ class LinearEquality(Constraint):
         assert x.shape[0] == len_y, \
             f'Length of x/y must match, have {x.shape[0], len(y)}.'
 
-        assert (dy.shape == (len_y, len_y) or dy.shape == (len_y,) or dy.shape == (1,) or dy.shape == ()), \
+        assert (dy.shape == (len_y, len_y) or dy.shape == (len_y,) or dy.shape == (len_y, 1) or
+                dy.shape == (1, len_y) or dy.shape == (1,) or dy.shape == ()), \
             f'Error matrix must be a matrix of shape (len(y), len(y)), a vector with len(y) or a number, \
             have {dy.shape} with y having length {len_y}.'
 
