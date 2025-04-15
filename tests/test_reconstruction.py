@@ -52,7 +52,7 @@ def test_reconstruction_BW_1d() -> None:
     data = {
         'x': p,
         'y': G + err * rng.randn(len(G)),
-        'dy': err * np.ones_like(p)}
+        'cov_y': err**2 * np.ones_like(p)}
 
     # setting up the model
     kernel = fp.kernels.RadialBasisFunction(0.5, 0.3)
@@ -88,7 +88,7 @@ def test_reconstruction_BW_1d_uv_asymptotics() -> None:
     data = {
         'x': p,
         'y': G + err * rng.randn(len(G)),
-        'dy': err * np.ones_like(p)}
+        'cov_y': err**2 * np.ones_like(p)}
 
     def uv_asymptotics(x): return 1 / x**3
 
@@ -125,7 +125,7 @@ def test_standard_interpolation_1D() -> None:
     data = {
         'x': p,
         'y': G_data,
-        'dy': err}
+        'cov_y': err**2}
 
     kernel = fp.kernels.RadialBasisFunction(3., 0.4)
     identity_op = fp.operators.Identity()
@@ -152,7 +152,7 @@ def test_dressing_1D() -> None:
     data = {
         'x': p,
         'y': G_data,
-        'dy': err * np.ones_like(p)}
+        'cov_y': err**2 * np.ones_like(p)}
 
     # setting up the model
     kernel = fp.kernels.RadialBasisFunction(0.3, 0.5)
