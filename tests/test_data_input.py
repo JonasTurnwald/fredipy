@@ -51,7 +51,7 @@ def test_single_datapoint_integrator(x: Any) -> None:
     data = {
         'x': x,
         'y': x,
-        'dy': 0.1}
+        'cov_y': 0.1}
 
     kernel = fp.kernels.RadialBasisFunction(0.5, 0.3)
 
@@ -83,7 +83,7 @@ def test_single_datapoint_identity(x: Any) -> None:
     data = {
         'x': x,
         'y': x,
-        'dy': 0.1}
+        'cov_y': 0.1}
 
     kernel = fp.kernels.RadialBasisFunction(0.5, 0.3)
     constraints = [fp.constraints.LinearEquality(fp.operators.Identity(), data)]
@@ -96,21 +96,21 @@ def test_single_datapoint_identity(x: Any) -> None:
         assert len(_rho) == 1
 
 
-@pytest.mark.parametrize("dy", [
-    rng.rand(3, 3),
+@pytest.mark.parametrize("cov_y", [
+    rng.rand(3, 3) + 0.1 * np.eye(3),
     [0.1, 0.2, 0.3],
     0.1,
     np.array([0.1, 0.2, 0.3]),
     np.array([0.1, 0.2, 0.3]).reshape(-1, 1),
     np.array([0.1, 0.2, 0.3]).reshape(1, -1)
 ])
-def test_multiple_dy_inputs(dy: Any) -> None:
+def test_multiple_cov_y_inputs(cov_y: Any) -> None:
     x = np.array([1, 2, 3])
     y = np.array([1, 2, 3])
     data = {
         'x': x,
         'y': y,
-        'dy': dy
+        'cov_y': cov_y
     }
 
     kernel = fp.kernels.RadialBasisFunction(0.5, 0.3)
@@ -122,7 +122,7 @@ def test_multiple_dy_inputs(dy: Any) -> None:
 
 
 @pytest.mark.parametrize("data_input", [
-    {'x': [1, 2, 3], 'y': [1, 2, 3], 'dy': [0.1, 0.2, 0.3]},
+    {'x': [1, 2, 3], 'y': [1, 2, 3], 'cov_y': [0.1, 0.2, 0.3]},
     [[1, 2, 3], [1, 2, 3], [0.1, 0.2, 0.3]],
     np.array([[1, 2, 3], [1, 2, 3], [0.1, 0.2, 0.3]])
 ])

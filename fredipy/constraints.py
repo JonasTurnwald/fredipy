@@ -29,35 +29,35 @@ class LinearEquality(Constraint):
         ----------
         op      : operator that acts on the GP, see Operator module.
         data    : data dictionary or List or np.ndarray. \
-                  If input is List Dictionary needs position 'x' and value 'y' entries and optionally some error 'dy'. \
-                  If input is List or np.ndarray needs [**x**, **y**, **dy**] entries, where dy is optional.
+                  If input is List Dictionary, needs position 'x' and value 'y' entries and optionally some error 'cov_y'. \
+                  If input is List or np.ndarray, needs [**x**, **y**, **cov_y**] entries, where cov_y is optional.
         x       : position of the data, List or np.ndarray or number.
         y       : value of the data, List or np.ndarray or number, must have the same length as x.
-        dy      : error of the data, List or np.ndarray or number or None.
+        cov_y   : covariance of the data, List or np.ndarray or number or None.
         """
         self.op = op
 
         if isinstance(data, dict):
             x, y = make_column_vector(data['x']), make_column_vector(data['y'])
-            dy = np.array(data['dy'] if 'dy' in data else 0.)
+            cov_y = np.array(data['cov_y'] if 'cov_y' in data else 0.)
 
         if isinstance(data, list) or isinstance(data, np.ndarray):
             x, y = make_column_vector(data[0]), make_column_vector(data[1])
-            dy = np.array(data[2] if len(data) > 2 else 0.)
+            cov_y = np.array(data[2] if len(data) > 2 else 0.)
 
         len_y = y.shape[0]
         assert x.shape[0] == len_y, \
             f'Length of x/y must match, have {x.shape[0], len(y)}.'
 
-        assert (dy.shape == (len_y, len_y) or dy.shape == (len_y,) or dy.shape == (len_y, 1) or
-                dy.shape == (1, len_y) or dy.shape == (1,) or dy.shape == ()), \
-            f'Error matrix must be a matrix of shape (len(y), len(y)), a vector with len(y) or a number, \
-            have {dy.shape} with y having length {len_y}.'
+        assert (cov_y.shape == (len_y, len_y) or cov_y.shape == (len_y,) or cov_y.shape == (len_y, 1) or
+                cov_y.shape == (1, len_y) or cov_y.shape == (1,) or cov_y.shape == ()), \
+            f'Covariance must be a matrix of shape (len(y), len(y)), a vector with len(y) or a number, \
+            have {cov_y.shape} with y having length {len_y}.'
 
-        if not dy.shape == (len(y), len(y)):
-            dy = dy * np.eye(len(y))
+        if not cov_y.shape == (len(y), len(y)):
+            cov_y = cov_y * np.eye(len(y))
 
-        self.x, self.y, self.dy = x, y, dy
+        self.x, self.y, self.cov_y = x, y, cov_y
         self._op = None
         self._args: Tuple = tuple()
         self._x = None

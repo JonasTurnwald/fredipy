@@ -97,7 +97,7 @@ class Riemann(Integrator):
             ) -> None:
 
         self.w = make_column_vector(np.linspace(w_min, w_max, int_n+1))
-        self.dw = self.w[1] - self.w[0]
+        self.dw = (self.w[1] - self.w[0]).item()
         self.w = self.w[:-1] + 0.5 * self.dw  # midpoint rule
 
     def doubleIntegrationSymmetric(
@@ -116,7 +116,7 @@ class Riemann(Integrator):
                     constraint(make_row_vector(self.w), x=make_column_vector(np.array([p[i, 0]])))
                     @ kernel(np.c_[self.w, p[i, 1:] * ones_w], np.c_[self.w, p[j, 1:] * ones_w])
                     @ constraint(make_column_vector(self.w), x=make_row_vector(np.array([p[j, 0]])))
-                )
+                ).item()
 
         return tmp + tmp.T - np.diag(tmp.diagonal())
 
@@ -258,7 +258,7 @@ class Simpson(Integrator):
         if int_n % 2 == 0:
             int_n = int_n + 1
         self.w = make_column_vector(np.linspace(w_min, w_max, int_n))
-        self.dw = self.w[1] - self.w[0]
+        self.dw = (self.w[1] - self.w[0]).item()
         # construct array of alternating prefactors
         self.prefactors = np.empty_like(self.w)
         self.prefactors[::2] = 2
@@ -286,7 +286,7 @@ class Simpson(Integrator):
                     @ kernel(np.c_[self.w, p[i, 1:] * ones_w], np.c_[self.w, p[j, 1:] * ones_w])
                     @ (self.prefactors
                        * constraint(make_row_vector(self.w), x=make_column_vector(np.array([p[j, 0]])))).T
-                )
+                ).item()
 
         return tmp + tmp.T - np.diag(tmp.diagonal())
 

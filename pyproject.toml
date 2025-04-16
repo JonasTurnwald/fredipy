@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "fredipy"
 authors = [
     {name = "Jonas Turnwald", email = "jonas.turnwald@tu-darmstadt.de"},
-    {name = "Julian M. Urban", email = "tbd@tbd.com"},  # DO EMAILS!
+    {name = "Julian M. Urban", email = "jurban@mit.edu"},  # DO EMAILS!
     {name = "Nicolas Wink", email = "tbd@tbd.com"}
 ]
 classifiers = [

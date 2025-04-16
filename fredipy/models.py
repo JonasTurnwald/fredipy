@@ -53,7 +53,7 @@ class GaussianProcess(Model):
         self.OpKer = OpKer
 
         self.y = np.concatenate([c.y for c in self.constraints])
-        self.dy = sp.linalg.block_diag(*[c.dy for c in self.constraints])
+        self.cov_y = sp.linalg.block_diag(*[c.cov_y for c in self.constraints])
 
         # for caching intermediate results
         self._posterior_cache: Dict[str, np.ndarray] = {}
@@ -203,7 +203,7 @@ class GaussianProcess(Model):
             OpKerOp = self.OpKerOp(
                 self.kernel, self.constraints)
             OpKerOp_cholesky = np.linalg.cholesky(
-                OpKerOp + self.dy)
+                OpKerOp + self.cov_y)
             alpha = sp.linalg.solve_triangular(
                 OpKerOp_cholesky.T,
                 sp.linalg.solve_triangular(
