@@ -36,29 +36,7 @@ def id_kernel(
 
 
 def test_integrators_1D() -> None:
-    # very hacky way to test standard integration results
-    def f(x, y):
-        return x**2
-
-    lowerbound = 0 + 4 * (rng.rand() - 0.5)
-    upperbound = 10 + 4 * (rng.rand() - 0.5)
-    ref_result = (upperbound**3 - lowerbound**3) / 3
-    # mock data
-    x = np.ones(1)
-    data = {'x': x, 'y': x, 'dy': x}
-    for integrator in create_integrators(lowerbound, upperbound, 1000, d=1):
-
-        integral_op = operators.Integral(id_kernel, integrator)
-        constraint = constraints.LinearEquality(integral_op, data)
-        result = integrator.singleIntegration(constraint, f, x).item()
-
-        assert abs(result - ref_result) / ref_result < 1e-4, \
-            "integrator {method} has an relative error of {err}".format(
-                method=integrator, err=abs(result - ref_result) / ref_result)
-
-
-def test_integrators_1D_v2() -> None:
-    # does this even make sense?
+    # test standard integration results
     def f(x, y):
         return x[:, 0]**2
 
@@ -67,7 +45,7 @@ def test_integrators_1D_v2() -> None:
     ref_result = (upperbound**3 - lowerbound**3) / 3
 
     x = np.ones(1)
-    data = {'x': np.c_[x, x], 'y': x, 'dy': x}
+    data = {'x': np.c_[x, x], 'y': x, 'cov_y': x}
 
     for integrator in create_integrators(lowerbound, upperbound, 1000, d=2):
 
@@ -80,7 +58,7 @@ def test_integrators_1D_v2() -> None:
 
 
 def test_integrators_2D() -> None:
-    # very hacky way to test standard 2D integration results
+    # test standard 2D integration results
     def f(x, y):
         return x**2 * y.T**2
 
@@ -89,7 +67,7 @@ def test_integrators_2D() -> None:
     ref_result = (upperbound**3 - lowerbound**3)**2 / 9
     # mock data
     x = np.ones(1)
-    data = {'x': x, 'y': x, 'dy': x}
+    data = {'x': x, 'y': x, 'coy_y': x}
     for integrator in create_integrators(lowerbound, upperbound, 1000, d=1):
 
         integral_op = operators.Integral(id_kernel, integrator)
