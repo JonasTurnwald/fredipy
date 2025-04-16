@@ -72,7 +72,7 @@ G_err = G + err * np.random.randn(len(G))
 data = {
     'x': p,
     'y': G_err,
-    'dy': err * np.ones_like(G)}
+    'cov_y': err**2 * np.ones_like(G)}
 
 # use the RBF kernel
 kernel = fp.kernels.RadialBasisFunction(variance=0.3, lengthscale=0.4)
