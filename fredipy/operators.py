@@ -30,7 +30,7 @@ class ConstMatrix(Operator):
     def make(self, *args):
         return self.mat
 
-             
+
 class Integral(Operator):
     '''Wrapper for integration constraints.
 
